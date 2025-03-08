@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>user click Test</title>
+        <meta charset="utf-8" />
+    </head>
+
+    <body>
+        <!-- our buttond to tell others -->
+        <button id="red" style="background-color:rgb(255, 0, 0); color:rgb(255, 255, 255)">RED</button>
+        <button id="blue" style="background-color:rgb(0, 0, 255); color:rgb(255, 255, 255)">BLUE</button>
+
+        <!-- this is magic code created when the node server runs -->
+        <!-- //VERY HANDY! https://socket.io/docs/v3/emit-cheatsheet/  -->
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            let socket = io();
+
+            socket.on('connect', (userData) => {
+                console.log('I exist!');
+
+                //put code here so that we know that socket.io has initailized ...
+                document.querySelector('#red').addEventListener('click', function(){
+                    socket.emit('red');
+                });
+
+                document.querySelector('#blue').addEventListener('click', function(){
+                    socket.emit('blue');
+                });
+
+                //listen to event from server
+                socket.on('color_change', (data) => {
+                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
+                    console.log('color_change:' + colorStr);
+                    document.body.style.backgroundColor = colorStr;
+                });
+            });
+
+        </script>
+    </body>
+</html>
