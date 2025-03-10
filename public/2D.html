@@ -1,41 +1,78 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>user click Test</title>
+        <title>2D Tic Tac Toe</title>
         <meta charset="utf-8" />
+        <style>
+            .board {
+                display: grid;
+                grid-template-columns: repeat(3, 100px);
+                grid-gap: 5px;
+                margin: 20px;
+            }
+            .cell {
+                width: 100px;
+                height: 100px;
+                font-size: 2em;
+            }
+        </style>
     </head>
-
     <body>
-        <!-- our buttond to tell others -->
-        <button id="red" style="background-color:rgb(255, 0, 0); color:rgb(255, 255, 255)">RED</button>
-        <button id="blue" style="background-color:rgb(0, 0, 255); color:rgb(255, 255, 255)">BLUE</button>
+        <h1>2D Tic Tac Toe</h1>
+        <p id="turn-indicator">Turn: </p>
+        <div class="board">
+            <button class="cell" data-index="0"></button>
+            <button class="cell" data-index="1"></button>
+            <button class="cell" data-index="2"></button>
+            <button class="cell" data-index="3"></button>
+            <button class="cell" data-index="4"></button>
+            <button class="cell" data-index="5"></button>
+            <button class="cell" data-index="6"></button>
+            <button class="cell" data-index="7"></button>
+            <button class="cell" data-index="8"></button>
+        </div>
 
-        <!-- this is magic code created when the node server runs -->
-        <!-- //VERY HANDY! https://socket.io/docs/v3/emit-cheatsheet/  -->
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            let socket = io();
+            const socket = io();
+            console.log("Socket initialized in 2D mode.");
 
-            socket.on('connect', (userData) => {
-                console.log('I exist!');
+            const cells = document.querySelectorAll('.cell');
+            const turnIndicator = document.getElementById('turn-indicator');
 
-                //put code here so that we know that socket.io has initailized ...
-                document.querySelector('#red').addEventListener('click', function(){
-                    socket.emit('red');
-                });
-
-                document.querySelector('#blue').addEventListener('click', function(){
-                    socket.emit('blue');
-                });
-
-                //listen to event from server
-                socket.on('color_change', (data) => {
-                    let colorStr = 'rgb(' + data.r + ',' + data.g + ',' + data.b + ')';
-                    console.log('color_change:' + colorStr);
-                    document.body.style.backgroundColor = colorStr;
+            // Add click listeners for each cell
+            cells.forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const index = cell.dataset.index;
+                    console.log("2D Cell clicked:", index);
+                    // Determine current player from turn indicator text
+                    const currentPlayer = turnIndicator.textContent.split(' ')[1] || 'X';
+                    console.log("Emitting ticTacToeMove with index:", index, "and player:", currentPlayer);
+                    socket.emit('ticTacToeMove', { index: index, player: currentPlayer });
                 });
             });
 
+            // Update game state when receiving changes from the server
+            socket.on('updateGameState', (gameState) => {
+                console.log("2D Received updateGameState:", gameState);
+                turnIndicator.textContent = 'Turn: ' + gameState.ticTacToe.currentTurn;
+                gameState.ticTacToe.board.forEach((mark, index) => {
+                    const cell = document.querySelector(`.cell[data-index="${index}"]`);
+                    cell.textContent = mark ? mark : '';
+                    // Set background color based on mark
+                    if (mark === 'X') {
+                        cell.style.backgroundColor = '#FFCCCC';
+                    } else if (mark === 'O') {
+                        cell.style.backgroundColor = '#CCCCFF';
+                    } else {
+                        cell.style.backgroundColor = '';
+                    }
+                });
+            });
+
+            socket.on('connect', () => {
+                console.log("Connected to socket server from 2D mode.");
+            });
         </script>
     </body>
 </html>

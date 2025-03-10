@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>3D Collaborative Number Game</title>
+    <meta charset="utf-8">
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+      body { margin: 0; }
+    </style>
+  </head>
+  <body>
+    <a-scene background="color: #222">
+      <!-- Camera with mouse cursor -->
+      <a-entity camera position="0 1.6 2">
+        <a-entity 
+          cursor="rayOrigin: mouse" 
+          raycaster="objects: .clickable" 
+          position="0 0 -1">
+        </a-entity>
+      </a-entity>
+      
+      <!-- Title -->
+      <a-entity position="0 3 -3">
+        <a-text value="Collaborative Number Game" align="center" color="#FFF" width="6"></a-text>
+      </a-entity>
+      
+      <!-- Target display (masked according to player role) -->
+      <a-entity id="target-display" position="0 2.2 -3">
+        <a-text value="Target: " align="center" color="#FF0" width="6"></a-text>
+      </a-entity>
+      
+      <!-- Player's input display -->
+      <a-entity id="player-display" position="-2 1.2 -3">
+        <a-text id="player-text" value="Your Input: " align="center" color="#0F0" width="4"></a-text>
+      </a-entity>
+      
+      <!-- Opponent's input display -->
+      <a-entity id="opponent-display" position="2 1.2 -3">
+        <a-text id="opponent-text" value="Other Input: " align="center" color="#0F0" width="4"></a-text>
+      </a-entity>
+      
+      <!-- Digit pad: a grid for digits 0-9 -->
+      <a-entity id="digit-pad" position="0 0 -3">
+        <!-- The digit pad elements will be created dynamically -->
+      </a-entity>
+      
+      <!-- Submit and Clear buttons -->
+      <a-entity id="button-group" position="0 -1.5 -3">
+        <!-- Submit Button -->
+        <a-box id="submit-btn" class="clickable" width="1" height="0.5" depth="0.2" position="-1 0 0" color="#4CAF50">
+          <a-text value="Submit" align="center" color="#FFF" position="0 0 0.3" width="2"></a-text>
+        </a-box>
+        <!-- Clear Button -->
+        <a-box id="clear-btn" class="clickable" width="1" height="0.5" depth="0.2" position="1 0 0" color="#F44336">
+          <a-text value="Clear" align="center" color="#FFF" position="0 0 0.3" width="2"></a-text>
+        </a-box>
+      </a-entity>
+    </a-scene>
+    
+    <!-- Include external JavaScript file -->
+    <script src="/js/collab.js"></script>
+  </body>
+</html>
